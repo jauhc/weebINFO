@@ -25,8 +25,17 @@ namespace animestate
             Console.Beep(600, 1);
         }
         
+        static bool localplayer = false;
+
         static void OnNewGameState(GameState gs)
         {
+            {
+                if (gs.Player.SteamID == gs.Provider.SteamID)
+                    localplayer = true;
+                else
+                    localplayer = false;
+            }
+
             Console.ForegroundColor = ConsoleColor.Black;
             int iPlayerCurAmmo = gs.Player.Weapons.ActiveWeapon.AmmoClip;
             
@@ -38,7 +47,7 @@ namespace animestate
             {
                 Console.BackgroundColor = ConsoleColor.White;
             }
-            if (gs.Player.Weapons.ActiveWeapon.AmmoClip == 0)
+            if (gs.Player.Weapons.ActiveWeapon.AmmoClip == 0 && localplayer)
             {
                 Console.Beep(); //classic beep
                 /* rofl this is a mess
@@ -50,7 +59,7 @@ namespace animestate
                 */
             }
 
-            if (gs.Player.State.Burning == 255)
+            if (gs.Player.State.Burning == 255 && localplayer)
             {
                 Console.Beep(450, 1);
             }
@@ -83,7 +92,7 @@ namespace animestate
             Console.WriteLine(" ╠═══Players \t\t" + gs.AllPlayers.Count);
             Console.WriteLine(" ╠═══Currently " + gs.Map.Phase + " on round " + gs.Map.Round);
             Console.WriteLine(" ╠═══Game score: (CT - " + gs.Map.TeamCT.Score + ") / (T - " + gs.Map.TeamT.Score + ")" + "\n ║");
-            Console.WriteLine(" ╟──Local player: [" + gs.Player.Clan + "] " + gs.Player.Name);
+            Console.WriteLine(" ╟──Current player: [" + gs.Player.Clan + "] " + gs.Player.Name);
             Console.WriteLine(" ╟─" + gs.Player.Name + "'s STEAMID \t" + gs.Player.SteamID);
             Console.WriteLine(" ╟─" + gs.Player.Name + "'s health \t" + gs.Player.State.Health);
             Console.WriteLine(" ╟─" + gs.Player.Name + " has helmet \t" + gs.Player.State.Helmet);
