@@ -1,5 +1,7 @@
 using System;
 using System.Timers;
+using System.IO;
+using System.Reflection;
 using CSGSI;
 using CSGSI.Nodes;
 
@@ -17,6 +19,8 @@ namespace animestate
                 Environment.Exit(0);
             }
             Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Clear();
             Console.WriteLine("Listening...");
         }
 
@@ -59,20 +63,29 @@ namespace animestate
                 */
             }
 
-            if (gs.Player.State.Burning == 255 && localplayer)
+            if (gs.Player.State.Burning == 255 && gs.Player.State.Flashed >= 200 && localplayer)
             {
-                Console.Beep(450, 1);
+                Console.Beep(450, 150);
             }
             if (gs.Round.WinTeam == RoundWinTeam.CT)
             {
                 Console.BackgroundColor = ConsoleColor.Cyan;
             }
             if (gs.Round.WinTeam == RoundWinTeam.T)
-                    {
+            {
                 Console.BackgroundColor = ConsoleColor.DarkYellow;
             }
             if (gs.Round.WinTeam == RoundWinTeam.Undefined && gs.Round.Bomb != BombState.Planted)
-                    {
+            {
+                Console.BackgroundColor = ConsoleColor.White;
+            }
+            if (gs.Round.Phase == RoundPhase.FreezeTime)
+            {
+                Console.BackgroundColor = ConsoleColor.Gray;
+            }
+            if (gs.Round.Phase == RoundPhase.Live &&
+                gs.Round.Bomb == BombState.Undefined)
+            {
                 Console.BackgroundColor = ConsoleColor.White;
             }
 
@@ -81,32 +94,34 @@ namespace animestate
             float deaths = gs.Player.MatchStats.Deaths;
             kd = kills / deaths;
             string kdr = kd.ToString("0.00");
-
+            
+            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
             //todo: make coloured statuses, helmets etc
             //health could use a smooth transition from green to red depending on hp
             Console.Clear();
-            Console.WriteLine(" ╔════CSGO Anime menu by edgar.money [beta]\n ║");
+            Console.WriteLine(" ╔════CSGO Anime menu by edgar.money [beta] built @ " + buildDate + "\n ║");
             Console.WriteLine(" ╠═══Playing " + gs.Map.Mode + " on " + gs.Map.Name);
-            Console.WriteLine(" ╠═══Server time \t" + gs.Provider.TimeStamp);
-            Console.WriteLine(" ╠═══Server ID \t\t" + gs.Provider.SteamID);
-            Console.WriteLine(" ╠═══Players \t\t" + gs.AllPlayers.Count);
+            Console.WriteLine(" ╠═══Server time─── " + gs.Provider.TimeStamp);
+            Console.WriteLine(" ╠═══Your ID─── " + gs.Provider.SteamID);
+            //Console.WriteLine(" ╠═══Players─── " + gs.AllPlayers.Count); //disabled because shows 0 at all times
             Console.WriteLine(" ╠═══Currently " + gs.Map.Phase + " on round " + gs.Map.Round);
             Console.WriteLine(" ╠═══Game score: (CT - " + gs.Map.TeamCT.Score + ") / (T - " + gs.Map.TeamT.Score + ")" + "\n ║");
             Console.WriteLine(" ╟──Current player: [" + gs.Player.Clan + "] " + gs.Player.Name);
-            Console.WriteLine(" ╟─" + gs.Player.Name + "'s STEAMID \t" + gs.Player.SteamID);
-            Console.WriteLine(" ╟─" + gs.Player.Name + "'s health \t" + gs.Player.State.Health);
-            Console.WriteLine(" ╟─" + gs.Player.Name + " has helmet \t" + gs.Player.State.Helmet);
-            Console.WriteLine(" ╟─" + gs.Player.Name + " money\t \t" + gs.Player.State.Money);
-            Console.WriteLine(" ╟─" + gs.Player.Name + "'s ammo \t" + gs.Player.Weapons.ActiveWeapon.AmmoClip + " out of " + gs.Player.Weapons.ActiveWeapon.AmmoClipMax + " (" + gs.Player.Weapons.ActiveWeapon.State + ")");
-            Console.WriteLine(" ╟─" + gs.Player.Name + "'s weapon \t" + gs.Player.Weapons.ActiveWeapon.Name + " (" + gs.Player.Weapons.ActiveWeapon.Paintkit + ")" );
-            Console.WriteLine(" ╟─" + gs.Player.Name + " money\t \t" + gs.Player.State.Money);
-            Console.WriteLine(" ╟─" + gs.Player.Name + "'s KD ratio \t" + kdr + " = " + gs.Player.MatchStats.Kills + " / " + gs.Player.MatchStats.Deaths);
-            Console.WriteLine(" ╟─Misc details\t");
+            Console.WriteLine(" ╟─" + gs.Player.Name + "'s STEAMID──── " + gs.Player.SteamID);
+            Console.WriteLine(" ╟─" + gs.Player.Name + "'s health──── " + gs.Player.State.Health);
+            Console.WriteLine(" ╟─" + gs.Player.Name + " has helmet──── " + gs.Player.State.Helmet);
+            Console.WriteLine(" ╟─" + gs.Player.Name + " money──── " + gs.Player.State.Money);
+            Console.WriteLine(" ╟─" + gs.Player.Name + "'s ammo──── " + gs.Player.Weapons.ActiveWeapon.AmmoClip + " out of " + gs.Player.Weapons.ActiveWeapon.AmmoClipMax + " (" + gs.Player.Weapons.ActiveWeapon.State + ")");
+            Console.WriteLine(" ╟─" + gs.Player.Name + "'s weapon──── " + gs.Player.Weapons.ActiveWeapon.Name + " \t(" + gs.Player.Weapons.ActiveWeapon.Paintkit + ")" );
+            Console.WriteLine(" ╙─" + gs.Player.Name + "'s KD ratio──── " + kdr + " = " + gs.Player.MatchStats.Kills + " / " + gs.Player.MatchStats.Deaths);
+            /*
+            Console.WriteLine(" ╟─Misc details");
             Console.WriteLine(" ╟─Flashed status \t" + gs.Player.State.Flashed);
             Console.WriteLine(" ╟─Smoked status \t" + gs.Player.State.Smoked);
             Console.WriteLine(" ╙─Burned status \t" + gs.Player.State.Burning);
             //Console.WriteLine("Winteam " + gs.Round.WinTeam);
-            //Console.WriteLine("Bomb status " + gs.Round.Bomb);
+            //Console.WriteLine("Bomb status " + gs.Round.Bomb); 
+            */
         }
     }
 }
